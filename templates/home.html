@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lost & Found Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+        body { background: #f7f9fc; }
+        .hero {
+            background: linear-gradient(135deg, #65310e, #cfa17e);
+            color: white;
+            padding: 70px 20px;
+            text-align: center;
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 10px 30px rgba(101, 49, 14, 0.15);
+        }
+        .search-container { max-width: 600px; margin: -25px auto 0 auto; position: relative; z-index: 10; }
+        .search-bar { border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); border: none; padding: 15px 25px; }
+        
+        .item-card {
+            background-color: #cfa17e;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .item-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(101, 49, 14, 0.25);
+        }
+        .card-img-container {
+            height: 200px;
+            width: 100%;
+            background-color: rgba(101, 49, 14, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .card-media-wrapper {
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+            background-color: rgba(101, 49, 14, 0.1); /* Soft background using your primary color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-img-top {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+        .placeholder-icon {
+            font-size: 3.5rem;
+            opacity: 0.6;
+        }        
+        .card-title { color: #ffffff; font-weight: 700; }
+        .card-text-custom { color: #f5eae1 !important; font-size: 0.95rem; line-height: 1.5; }
+        .contact-text { color: #ffffff !important; opacity: 0.9; }
+
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(15px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        .btn-post { transform: scale(1); transition: 0.2s; font-weight: 600; padding: 10px 25px; border-radius: 25px; }
+        .btn-post:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+<div class="hero fade-in">
+    <h1 style="font-weight: 800; font-size: 2.8rem;">Find Your Lost Items Easily</h1>
+    <p class="opacity-75">University Lost & Found Central Portal</p>
+    <a href="{% url 'add_item' %}" class="btn btn-light mt-2 btn-post shadow-sm" style="color: #65310e;">
+        ✨ Post an Item
+    </a>
+</div>
+
+
+<div class="container search-container">
+        <form method="GET" action="{% url 'home' %}" class="d-flex gap-2">
+
+    <input type="text"  name="q" class="form-control search-bar" value="{{ query|default:'' }}" placeholder="🔍 Search lost or found items by name...">
+ <button type="submit" class="search-bar btn text-white px-4 fw-bold border-radius" style="background-color: #65310e;">Search</button>
+        {% if query %}
+            <a href="{% url 'home' %}" class="search-bar btn btn-outline-secondary d-flex align-items-center">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-lg h-100 item-card">
+                
+                <div class="card-media-wrapper">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+                    {% else %}
+                        <div class="placeholder-icon">📦</div>
+                    {% endif %}
+                </div>
+
+                <div class="card-body d-flex flex-column justify-content-between p-4">
+                    <div>
+                        <h5 class="card-title card-title-text mb-2">{{ item.title }}</h5>
+                        <p class="card-text card-desc-text">
+                            {{ item.description|truncatewords:20 }}
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-2 border-top border-white border-opacity-25">
+                        <span class="badge {% if item.status == 'Lost' %}bg-danger{% else %}bg-success{% endif %} px-3 py-2 rounded-pill">
+                            {{ item.status }}
+                        </span>
+                        <small class="text-white fw-bold">
+                            📞 {{ item.contact }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3 class="text-muted">No items found matching your request.</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>
